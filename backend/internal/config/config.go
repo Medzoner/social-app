@@ -11,8 +11,8 @@ type Config struct {
 	SMS      SMS     `envPrefix:"SMS_"`
 	DB       DB      `envPrefix:"DB_"`
 	Auth     Auth
-	Mailtrap Mailtrap `envPrefix:"MAILER_"`
 	LLM      LLM      `envPrefix:"LLM_"`
+	Mailtrap Mailtrap `envPrefix:"MAILER_"`
 }
 
 type DB struct {
@@ -38,8 +38,8 @@ type Mailgun struct {
 }
 
 type SMS struct {
-	AccountID string `env:"ACCOUNT_ID" envDefault:"xxx"`
-	AuthToken string `env:"AUTH_TOKEN" envDefault:"xxx"`
+	AccountID string `env:"ACCOUNT_ID" envDefault:"AC647d6d296011d0a30fe362f834311544"`
+	AuthToken string `env:"AUTH_TOKEN" envDefault:"30fc0663e2976b2a253f46dc28cfdb33"`
 	From      string `env:"FROM"       envDefault:"+15005550006"`
 }
 
