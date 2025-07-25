@@ -13,6 +13,7 @@ type Config struct {
 	Auth     Auth
 	LLM      LLM      `envPrefix:"LLM_"`
 	Mailtrap Mailtrap `envPrefix:"MAILER_"`
+	Redis    Redis    `envPrefix:"REDIS_"`
 }
 
 type DB struct {
@@ -21,6 +22,15 @@ type DB struct {
 
 type Auth struct {
 	JWTSecret string `env:"JWT_SECRET" envDefault:"secret"`
+}
+
+type Redis struct {
+	Host     string `env:"HOST"      envDefault:"localhost"`
+	Password string `env:"PASSWORD"  envDefault:""`
+	Port     int    `env:"PORT"      envDefault:"6379"`
+	DB       int    `env:"DB"        envDefault:"0"`
+	PoolSize int    `env:"POOL_SIZE" envDefault:"10"`
+	MinIdle  int    `env:"MIN_IDLE"  envDefault:"5"`
 }
 
 type Mailtrap struct {
