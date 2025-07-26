@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/caarlos0/env/v11"
+	"time"
 )
 
 type Config struct {
@@ -21,7 +22,12 @@ type DB struct {
 }
 
 type Auth struct {
-	JWTSecret string `env:"JWT_SECRET" envDefault:"secret"`
+	JWTSecret          string        `env:"JWT_SECRET" envDefault:"secret"`
+	JWTExpDuration     time.Duration `env:"-"`
+	RefreshExpDuration time.Duration `env:"-"`
+
+	JWTExp     string `env:"JWT_EXP" envDefault:"15m"`
+	RefreshExp string `env:"REFRESH_EXP" envDefault:"24h"`
 }
 
 type Redis struct {
@@ -63,5 +69,15 @@ func NewConfig() (*Config, error) {
 	if err := env.Parse(cfg); err != nil {
 		return nil, fmt.Errorf("failed to parse environment variables: %w", err)
 	}
+
+	var err error
+	if cfg.Auth.JWTExpDuration, err = time.ParseDuration(cfg.Auth.JWTExp); err != nil {
+		return nil, fmt.Errorf("invalid JWT_EXP: %w", err)
+	}
+
+	if cfg.Auth.RefreshExpDuration, err = time.ParseDuration(cfg.Auth.RefreshExp); err != nil {
+		return nil, fmt.Errorf("invalid REFRESH_EXP: %w", err)
+	}
+
 	return cfg, nil
 }
