@@ -5,6 +5,9 @@ import (
 
 	"github.com/caarlos0/env/v11"
 	"time"
+	"golang.org/x/oauth2/google"
+	"golang.org/x/oauth2"
+	"strings"
 )
 
 type Config struct {
@@ -28,6 +31,25 @@ type Auth struct {
 
 	JWTExp     string `env:"JWT_EXP" envDefault:"15m"`
 	RefreshExp string `env:"REFRESH_EXP" envDefault:"24h"`
+
+	Sso Sso `envPrefix:"SSO_"` // SSO configuration
+}
+
+type Sso struct {
+	Google SsoGoogle `envPrefix:"GOOGLE_"`
+}
+
+type SsoGoogle struct {
+	ClientID     string `env:"CLIENT_ID" envDefault:"1012037455933-9nc0p66jc6s6cbv5g1r2u87oroqnrnlv.apps.googleusercontent.com"`
+	ClientSecret string `env:"CLIENT_SECRET" envDefault:"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"`
+	RedirectURL  string `env:"REDIRECT_URL" envDefault:"http://localhost:3222/oauth/google/callback"`
+	Scopes       []string
+	Endpoint     oauth2.Endpoint `env:"ENDPOINT"`
+	ScopesRaw    string          `env:"SCOPES_RAW" envDefault:"https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid"`
+}
+
+func (g *SsoGoogle) GetScopes() []string {
+	return strings.Fields(g.ScopesRaw)
 }
 
 type Redis struct {
@@ -78,6 +100,8 @@ func NewConfig() (*Config, error) {
 	if cfg.Auth.RefreshExpDuration, err = time.ParseDuration(cfg.Auth.RefreshExp); err != nil {
 		return nil, fmt.Errorf("invalid REFRESH_EXP: %w", err)
 	}
+
+	cfg.Auth.Sso.Google.Endpoint = google.Endpoint
 
 	return cfg, nil
 }
