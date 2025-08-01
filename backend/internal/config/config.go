@@ -2,12 +2,12 @@ package config
 
 import (
 	"fmt"
+	"strings"
+	"time"
 
 	"github.com/caarlos0/env/v11"
-	"time"
-	"golang.org/x/oauth2/google"
 	"golang.org/x/oauth2"
-	"strings"
+	"golang.org/x/oauth2/google"
 )
 
 type Config struct {
@@ -25,14 +25,12 @@ type DB struct {
 }
 
 type Auth struct {
-	JWTSecret          string        `env:"JWT_SECRET" envDefault:"secret"`
+	JWTSecret          string        `env:"JWT_SECRET"  envDefault:"secret"`
+	JWTExp             string        `env:"JWT_EXP"     envDefault:"15m"`
+	RefreshExp         string        `env:"REFRESH_EXP" envDefault:"24h"`
+	Sso                Sso           `envPrefix:"SSO_"`
 	JWTExpDuration     time.Duration `env:"-"`
 	RefreshExpDuration time.Duration `env:"-"`
-
-	JWTExp     string `env:"JWT_EXP" envDefault:"15m"`
-	RefreshExp string `env:"REFRESH_EXP" envDefault:"24h"`
-
-	Sso Sso `envPrefix:"SSO_"` // SSO configuration
 }
 
 type Sso struct {
@@ -40,12 +38,12 @@ type Sso struct {
 }
 
 type SsoGoogle struct {
-	ClientID     string `env:"CLIENT_ID" envDefault:"1012037455933-9nc0p66jc6s6cbv5g1r2u87oroqnrnlv.apps.googleusercontent.com"`
-	ClientSecret string `env:"CLIENT_SECRET" envDefault:"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"`
-	RedirectURL  string `env:"REDIRECT_URL" envDefault:"http://localhost:3222/oauth/google/callback"`
-	Scopes       []string
+	ClientID     string          `env:"CLIENT_ID"     envDefault:"1012037455933-9nc0p66jc6s6cbv5g1r2u87oroqnrnlv.apps.googleusercontent.com"`
+	ClientSecret string          `env:"CLIENT_SECRET" envDefault:"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"`
+	RedirectURL  string          `env:"REDIRECT_URL"  envDefault:"http://localhost:3222/oauth/google/callback"`
+	ScopesRaw    string          `env:"SCOPES_RAW"    envDefault:"https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid"`
 	Endpoint     oauth2.Endpoint `env:"ENDPOINT"`
-	ScopesRaw    string          `env:"SCOPES_RAW" envDefault:"https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid"`
+	Scopes       []string
 }
 
 func (g *SsoGoogle) GetScopes() []string {
