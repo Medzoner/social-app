@@ -1,0 +1,965 @@
+definitions:
+  auth.LoginInput:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  auth.RegisterInput:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  comment.CreateCommentInput:
+    properties:
+      content:
+        type: string
+      post_id:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  like.PostInput:
+    properties:
+      post_id:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  models.Comment:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        example: 123
+        type: integer
+      post_id:
+        type: integer
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+      user_id:
+        type: integer
+      user_uuid:
+        type: string
+    type: object
+  models.Like:
+    properties:
+      created_at:
+        type: string
+      id:
+        example: 123
+        type: integer
+      post_id:
+        type: integer
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+      user_id:
+        type: integer
+    type: object
+  models.LikeStats:
+    properties:
+      liked_by_current_user:
+        type: boolean
+      total_likes:
+        type: integer
+    type: object
+  models.Media:
+    properties:
+      created_at:
+        type: string
+      file_ext:
+        type: string
+      file_name:
+        type: string
+      file_path:
+        type: string
+      file_size:
+        type: integer
+      file_type:
+        type: string
+      id:
+        example: 123
+        type: integer
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+      user_id:
+        type: integer
+    type: object
+  models.Message:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        example: 123
+        type: integer
+      read:
+        type: boolean
+      receiver_id:
+        type: integer
+      sender_id:
+        type: integer
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+      user_id:
+        type: integer
+    type: object
+  models.MessageList:
+    properties:
+      has_more:
+        type: boolean
+      messages:
+        items:
+          $ref: '#/definitions/models.Message'
+        type: array
+      next_cursor:
+        type: string
+    type: object
+  models.Notification:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        example: 123
+        type: integer
+      is_read:
+        type: boolean
+      link:
+        type: string
+      payload:
+        type: string
+      type:
+        $ref: '#/definitions/models.NotificationType'
+      type_id:
+        type: integer
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+      user_id:
+        type: integer
+    type: object
+  models.NotificationType:
+    enum:
+    - info
+    - message
+    - post
+    type: string
+    x-enum-varnames:
+    - NotificationTypeInfo
+    - NotificationTypeMessage
+    - NotificationTypePost
+  models.Post:
+    properties:
+      comments:
+        items:
+          $ref: '#/definitions/models.Comment'
+        type: array
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        example: 123
+        type: integer
+      likes:
+        items:
+          $ref: '#/definitions/models.Like'
+        type: array
+      media:
+        $ref: '#/definitions/models.Media'
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+      user_id:
+        type: integer
+    type: object
+  models.User:
+    properties:
+      avatar:
+        type: string
+      bio:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      jwt_token:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+  notification.MarkReadInput:
+    properties:
+      id:
+        type: integer
+      user_id:
+        type: integer
+    required:
+    - id
+    type: object
+  post.CreatePostInput:
+    properties:
+      content:
+        type: string
+      user_id:
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /chats:
+    get:
+      consumes:
+      - application/json
+      description: Register chat routes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              items:
+                $ref: '#/definitions/models.Message'
+              type: array
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Register chat routes
+      tags:
+      - chat
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Login an existing user
+      parameters:
+      - description: User login input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/auth.LoginInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: JWT token
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid input binding
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Failed to login user
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Login a user
+      tags:
+      - users
+  /logout:
+    post:
+      consumes:
+      - application/json
+      description: Logout the current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: logged out successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Failed to logout user
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Logout a user
+      tags:
+      - users
+  /media/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload an image file
+      parameters:
+      - description: Image file to upload
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Media'
+        "400":
+          description: No file is received
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Failed to upload image
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Upload image
+      tags:
+      - Media
+  /messages/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get messages between two users
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Cursor for pagination
+        in: query
+        name: cursor
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.MessageList'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get messages
+      tags:
+      - chat
+  /messages/{id}/read:
+    post:
+      consumes:
+      - application/json
+      description: Mark messages as read between two users
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: boolean
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Mark messages as read
+      tags:
+      - chat
+  /notifications:
+    get:
+      consumes:
+      - application/json
+      description: Fetch notifications for the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Notification'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get user notifications
+      tags:
+      - Notifications
+  /notifications/mark-all-read:
+    post:
+      consumes:
+      - application/json
+      description: Mark all notifications for the authenticated user as read
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Mark all notifications as read
+      tags:
+      - Notifications
+  /notifications/mark-read:
+    post:
+      consumes:
+      - application/json
+      description: Mark specific notifications for the authenticated user as read
+      parameters:
+      - description: Input for marking notifications as read
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/notification.MarkReadInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Mark specific notifications as read
+      tags:
+      - Notifications
+  /posts:
+    post:
+      consumes:
+      - application/json
+      description: Create a new post
+      parameters:
+      - description: Create Post Input
+        in: body
+        name: post
+        required: true
+        schema:
+          $ref: '#/definitions/post.CreatePostInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Post'
+        "400":
+          description: Invalid input
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new post
+      tags:
+      - Post
+  /posts/{id}/comments:
+    get:
+      consumes:
+      - application/json
+      description: Get comments for a specific post
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Cursor for pagination
+        in: query
+        name: cursor
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of comments
+          schema:
+            items:
+              $ref: '#/definitions/models.Comment'
+            type: array
+        "400":
+          description: Invalid post ID
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Failed to get comments
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get comments for a post
+      tags:
+      - comments
+    post:
+      consumes:
+      - application/json
+      description: Create a comment for a post
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Comment data
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/comment.CreateCommentInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Comment created successfully
+          schema:
+            $ref: '#/definitions/models.Comment'
+        "400":
+          description: Invalid post ID or comment binding
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Failed to create comment
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a comment
+      tags:
+      - comments
+  /posts/{id}/comments/count:
+    get:
+      consumes:
+      - application/json
+      description: Count the number of comments for a specific post
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Count of comments
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: Invalid post ID
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Failed to count comments
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Count comments for a post
+      tags:
+      - comments
+  /posts/{id}/like:
+    post:
+      consumes:
+      - application/json
+      description: Like a post by ID
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Like Input
+        in: body
+        name: like
+        required: true
+        schema:
+          $ref: '#/definitions/like.PostInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Like created successfully
+          schema:
+            $ref: '#/definitions/models.Like'
+        "400":
+          description: Invalid input
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Post not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Like already exists
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Like a post
+      tags:
+      - Likes
+  /posts/{id}/like-stats:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve like statistics for a specific post by ID
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Like statistics
+          schema:
+            $ref: '#/definitions/models.LikeStats'
+        "400":
+          description: Invalid post ID
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Post not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get like statistics for a post
+      tags:
+      - Likes
+  /posts/{id}/likes:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all likes for a specific post by ID
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of likes
+          schema:
+            items:
+              $ref: '#/definitions/models.Like'
+            type: array
+        "400":
+          description: Invalid post ID
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Post not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get likes for a post
+      tags:
+      - Likes
+  /posts/{id}/unlike:
+    post:
+      consumes:
+      - application/json
+      description: Unlike a post by ID
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Post unliked successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid input
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Like not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Unlike a post
+      tags:
+      - Likes
+  /profile/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get user profile by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get user profile
+      tags:
+      - profile
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user
+      parameters:
+      - description: User registration input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/auth.RegisterInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: registration successful
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid input binding
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Failed to register user
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Register a user
+      tags:
+      - users
+  /users/{id}/posts:
+    get:
+      consumes:
+      - application/json
+      description: Get posts by user ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Cursor for pagination
+        in: query
+        name: cursor
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Post'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get posts by user ID
+      tags:
+      - Post
+swagger: "2.0"
