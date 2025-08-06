@@ -38,8 +38,8 @@ type Sso struct {
 }
 
 type SsoGoogle struct {
-	ClientID     string          `env:"CLIENT_ID"     envDefault:"1012037455933-9nc0p66jc6s6cbv5g1r2u87oroqnrnlv.apps.googleusercontent.com"`
-	ClientSecret string          `env:"CLIENT_SECRET" envDefault:"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"`
+	ClientID     string          `env:"CLIENT_ID"     envDefault:"xxxxxx.apps.googleusercontent.com"`
+	ClientSecret string          `env:"CLIENT_SECRET" envDefault:"GOCSPX-xxxxxxx"`
 	RedirectURL  string          `env:"REDIRECT_URL"  envDefault:"http://localhost:3222/oauth/google/callback"`
 	ScopesRaw    string          `env:"SCOPES_RAW"    envDefault:"https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid"`
 	Endpoint     oauth2.Endpoint `env:"ENDPOINT"`
@@ -61,8 +61,8 @@ type Redis struct {
 
 type Mailtrap struct {
 	Host     string `env:"HOST"      envDefault:"sandbox.smtp.mailtrap.io"`
-	AuthUser string `env:"AUTH_USER" envDefault:"89ef83a7cddb56"`
-	AuthPass string `env:"AUTH_PASS" envDefault:"a09074a9f61630"`
+	AuthUser string `env:"AUTH_USER" envDefault:"xxxxxxx"`
+	AuthPass string `env:"AUTH_PASS" envDefault:"xxxxxxx"`
 	From     string `env:"FROM"      envDefault:"medzux@gmail.com"`
 	Port     int    `env:"PORT"      envDefault:"2525"`
 }
@@ -74,8 +74,8 @@ type Mailgun struct {
 }
 
 type SMS struct {
-	AccountID string `env:"ACCOUNT_ID" envDefault:"AC647d6d296011d0a30fe362f834311544"`
-	AuthToken string `env:"AUTH_TOKEN" envDefault:"30fc0663e2976b2a253f46dc28cfdb33"`
+	AccountID string `env:"ACCOUNT_ID" envDefault:"xxxxxxx"`
+	AuthToken string `env:"AUTH_TOKEN" envDefault:"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"`
 	From      string `env:"FROM"       envDefault:"+15005550006"`
 }
 
