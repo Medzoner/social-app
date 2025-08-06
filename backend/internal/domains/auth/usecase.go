@@ -93,6 +93,12 @@ func (u UseCase) Login(ctx context.Context, input auth.LoginInput) (auth.JWTToke
 		return auth.JWTToken{}, fmt.Errorf("failed to generate JWT token: %w", err)
 	}
 
+	token.VerifyResponse = auth.VerifyResponse{
+		ID:       user.ID,
+		Username: user.Username,
+		Verified: user.Verified,
+	}
+
 	return token, nil
 }
 
