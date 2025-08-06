@@ -12,5 +12,5 @@ type LoginInput struct {
 }
 
 type OauthInput struct {
-	Code string `binding:"required" json:"code"`
+	Code string `form:"code" binding:"required" json:"code"`
 }

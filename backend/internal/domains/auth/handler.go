@@ -150,19 +150,37 @@ func (h Handler) RequestVerification(c *middleware.Context) {
 }
 
 func (h Handler) OauthLogin(context *gin.Context) {
-	// This handler is not implemented yet
-	context.JSON(http.StatusNotImplemented, gin.H{"message": "Oauth login not implemented"})
+	resp := h.usecase.OauthLogin(context.Request.Context())
+	context.Redirect(http.StatusFound, resp)
 }
 
 func (h Handler) OauthCallback(context *gin.Context) {
-	// This handler is not implemented yet
-	context.JSON(http.StatusNotImplemented, gin.H{"message": "Oauth callback not implemented"})
+	var input auth.OauthInput
+	if err := context.ShouldBindQuery(&input); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid OAuth input"})
+		return
+	}
+
+	jwt, err := h.usecase.OauthCallback(context.Request.Context(), input)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to complete OAuth login"})
+		return
+	}
+
+	if !jwt.VerifyResponse.IsEmpty() {
+		context.JSON(http.StatusAccepted, gin.H{
+			"verified": false,
+			"id":       jwt.VerifyResponse.ID,
+			"username": jwt.VerifyResponse.Username,
+		})
+		return
+	}
+
+	context.Redirect(http.StatusFound, "http://localhost:5173/oauth-callback?access_token="+jwt.AccessToken+"&refresh_token="+jwt.RefreshToken+"&id_token="+jwt.IDToken)
 }
 
 func (h Handler) IsUserOnline(context *middleware.Context) {
-	userID := context.User.ID
-
-	isOnline, err := h.usecase.IsUserOnline(context.Request.Context(), userID)
+	isOnline, err := h.usecase.IsUserOnline(context.Request.Context(), context.User.ID)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check user online status"})
 		return
