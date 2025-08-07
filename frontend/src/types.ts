@@ -33,6 +33,7 @@ export interface JwtToken {
 
 export interface AuthHeader {
   Authorization: string
+  'Content-Type'?: string
 }
 
 export interface Notification {

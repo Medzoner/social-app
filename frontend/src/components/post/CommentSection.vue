@@ -5,6 +5,7 @@
     <div v-if="!show">
       <button
         @click="load(nextCursor)"
+        name="show-comments"
         class="rounded bg-gray-100 px-3 py-1 text-sm hover:bg-gray-200"
       >
         Afficher les commentaires ({{ commentCount }})
@@ -25,7 +26,7 @@
     </div>
 
     <ul v-if="show" class="space-y-1">
-      <li v-for="comment in comments" :key="comment.id">
+      <li class="comment-content" v-for="comment in comments" :key="comment.id">
         <small>#{{ comment.user.username }}</small> : {{ comment.content }}
       </li>
     </ul>
@@ -38,10 +39,12 @@
 
     <input
       v-model="input"
+      name="comment"
       placeholder="Ajouter un commentaire"
       class="mt-2 w-full rounded border p-1"
     />
-    <button @click="send" class="mt-1 rounded bg-gray-200 px-2 py-1 text-sm">Envoyer</button>
+
+    <button name="submit-comment" @click="send" class="mt-1 rounded bg-gray-200 px-2 py-1 text-sm">Envoyer</button>
   </div>
 </template>
 
@@ -76,7 +79,7 @@ const load = async (cursor = null) => {
 
   const url = `/api/posts/${props.postId}/comments` + (cursor ? `?cursor=${cursor}` : '')
   const res = await axios.get(url, {
-    headers: { ...auth.getAuthHeader() }
+    headers: { ...auth.getAuthJSONHeader() }
   })
 
   comments.value.push(...res.data.comments)
@@ -93,8 +96,8 @@ const toggle = () => {
 const send = async () => {
   await axios.post(
     `/api/posts/${props.postId}/comments`,
-    { content: input.value },
-    { headers: { ...auth.getAuthHeader() } }
+    { content: input.value, post_id: props.postId },
+    { headers: { ...auth.getAuthJSONHeader() } }
   )
   emit('notify', 'Comment added!')
   input.value = ''

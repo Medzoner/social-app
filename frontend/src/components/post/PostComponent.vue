@@ -1,6 +1,6 @@
 <template>
   <ul class="mt-6 space-y-4">
-    <li v-for="post in filteredPosts" :key="post.id" class="rounded border bg-white p-4 shadow-sm">
+    <li v-for="post in filteredPosts" :key="post.id" class="post-content rounded border bg-white p-4 shadow-sm">
       <small>
         <RouterLink :to="`/profile/${post.user.id}`" class="text-blue-600 hover:underline">
           <AvatarImage
@@ -8,11 +8,11 @@
             :src="post.user.avatar_media.file_path"
             size="28"
             alt="Avatar de {{ post.user.username }}"
-            class="mr-2 inline-block h-7 w-7 rounded-full bg-gray-300 text-center text-xs leading-7 text-white"
+            class="avatar mr-2 inline-block h-7 w-7 rounded-full bg-gray-300 text-center text-xs leading-7 text-white"
           />
           <span
             v-else
-            class="mr-2 inline-block h-7 w-7 rounded-full bg-gray-300 text-center text-xs leading-7 text-white"
+            class="avatar mr-2 inline-block h-7 w-7 rounded-full bg-gray-300 text-center text-xs leading-7 text-white"
           >
             {{ post.user.username.charAt(0).toUpperCase() }}
           </span>
@@ -103,7 +103,7 @@ const fetchPosts = async () => {
 
   try {
     const res = await axios.get(url, {
-      headers: { ...auth.getAuthHeader() }
+      headers: { ...auth.getAuthJSONHeader() }
     })
 
     posts.value.push(...res.data.posts)
@@ -118,7 +118,7 @@ const fetchPosts = async () => {
   // const countComms = async () => {
   try {
     const res = await axios.get(`/api/posts/comments/counts`, {
-      headers: { ...auth.getAuthHeader() },
+      headers: { ...auth.getAuthJSONHeader() },
       params: { ids: postIds },
       paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'repeat' })
     })
@@ -136,7 +136,7 @@ const fetchPosts = async () => {
   // const countLikes = async () => {
   try {
     const res = await axios.get(`/api/posts/like/counts`, {
-      headers: { ...auth.getAuthHeader() },
+      headers: { ...auth.getAuthJSONHeader() },
       params: { ids: postIds },
       paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'repeat' })
     })

@@ -17,7 +17,7 @@ export const useNotificationStore = defineStore('notifications', {
     async fetchNotifications(): Promise<void> {
       const auth = useAuthStore()
       const res = await axios.get('/api/notifications', {
-        headers: { ...auth.getAuthHeader() }
+        headers: { ...auth.getAuthJSONHeader() }
       })
       this.list = res.data
       this.unreadCount = res.data.length
@@ -28,7 +28,7 @@ export const useNotificationStore = defineStore('notifications', {
         '/api/notifications/all-read',
         {},
         {
-          headers: { ...auth.getAuthHeader() }
+          headers: { ...auth.getAuthJSONHeader() }
         }
       )
       this.unreadCount = 0
@@ -39,7 +39,7 @@ export const useNotificationStore = defineStore('notifications', {
         '/api/notifications/read',
         { id: notif.id },
         {
-          headers: { ...auth.getAuthHeader() }
+          headers: { ...auth.getAuthJSONHeader() }
         }
       )
       this.list = this.list.filter((n) => n.id !== notif.id)

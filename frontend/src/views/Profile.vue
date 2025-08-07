@@ -73,7 +73,7 @@ const fetchProfile = async (): Promise<void> => {
   media.value = data.avatar_media || ''
 
   const posts = await axios.get<Post[]>(`/api/profile/${route.params.id}/posts`, {
-    headers: { ...auth.getAuthHeader() }
+    headers: { ...auth.getAuthJSONHeader() }
   })
 
   if (profile.value) {

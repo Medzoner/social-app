@@ -4,6 +4,7 @@
 
     <input
       v-model="searchQuery"
+      name="search"
       placeholder="Search posts..."
       class="mb-4 w-full rounded border p-2"
     />
@@ -141,7 +142,7 @@ const createPost = async (): Promise<void> => {
   const res = await axios.post(
     '/api/posts',
     { content: content.value, media_uuids: mediaUuids },
-    { headers: { ...auth.getAuthHeader() } }
+    { headers: { ...auth.getAuthJSONHeader() } }
   )
 
   if (res.status !== 201) {

@@ -41,11 +41,11 @@ const toggleLike = async () => {
 
   try {
     if (!hasLike.value) {
-      await axios.post(url, {}, { headers: { ...auth.getAuthHeader() } })
+      await axios.post(url, {}, { headers: { ...auth.getAuthJSONHeader() } })
       likeCount.value++
       hasLike.value = true
     } else {
-      await axios.delete(url, { headers: { ...auth.getAuthHeader() } })
+      await axios.delete(url, { headers: { ...auth.getAuthJSONHeader() } })
       likeCount.value = Math.max(0, likeCount.value - 1)
       hasLike.value = false
     }

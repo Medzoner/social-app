@@ -32,7 +32,7 @@ const router = useRouter()
 const fetchChats = async (): Promise<void> => {
   try {
     const res = await axios.get('/api/chats', {
-      headers: { ...auth.getAuthHeader() }
+      headers: { ...auth.getAuthJSONHeader() }
     })
     chats.value = res.data
   } catch (err) {

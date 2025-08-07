@@ -1,7 +1,7 @@
 package comment
 
 type CreateCommentInput struct {
-	Content string `json:"content"`
-	PostID  uint64 `json:"post_id"`
+	Content string `binding:"required" json:"content"`
+	PostID  uint64 `binding:"required" json:"post_id"`
 	UserID  uint64 `json:"user_id"`
 }

@@ -71,7 +71,7 @@ func createFakeFile(path string) error {
 	return nil
 }
 
-func seedMedia(db *gorm.DB, count int, basePath string) []models.Media {
+func seedMedia(db *gorm.DB, userID uint64, count int, basePath string) []models.Media {
 	//nolint:gosec // math/rand suffisant ici
 	rand.New(rand.NewSource(time.Now().UnixNano()))
 	ensureDirs(basePath)
@@ -103,7 +103,7 @@ func seedMedia(db *gorm.DB, count int, basePath string) []models.Media {
 				UpdatedAt: time.Now().UTC(),
 			},
 			FilePath: fullPath,
-			UserID:   1,
+			UserID:   userID,
 		}
 
 		db.Create(&media)
@@ -144,8 +144,9 @@ func loadFiles(def struct {
 	}
 }
 
-func seedData(db *gorm.DB, m []models.Media) {
+func seedData(db *gorm.DB) {
 	users := []models.User{
+		{Username: "tester", Password: hashPassword("12345"), Bio: "Je suis Tester", Avatar: "", Role: "user", Email: "tester@mail.mail", Verified: true, VerifiedExpires: time.Now().Add(50 * 30 * 24 * time.Hour)},
 		{Username: "alice", Password: hashPassword("12345"), Bio: "Je suis Alice", Avatar: "", Role: "user", Email: "alice@mail.mail"},
 		{Username: "bob", Password: hashPassword("12345"), Bio: "Je suis Bob", Avatar: "", Role: "user", Email: "bob@mail.mail"},
 		{Username: "medz", Password: hashPassword("12345"), Bio: "Je suis Medz", Avatar: "", Role: "user", Email: "medz@mail.mail"},
@@ -163,6 +164,7 @@ func seedData(db *gorm.DB, m []models.Media) {
 			users[i].ID = existing.ID
 		}
 
+		m := seedMedia(db, users[i].ID, 5, "uploads")
 		for j := 1; j <= 5; j++ {
 			//nolint:gosec // math/rand suffisant ici
 			now := time.Now().Add(-time.Duration(rand.Intn(100)) * time.Hour)
@@ -170,7 +172,7 @@ func seedData(db *gorm.DB, m []models.Media) {
 				Content: fmt.Sprintf("Post #%d by %s", j, users[i].Username),
 				UserID:  users[i].ID,
 				Medias: []models.Media{
-					m[j],
+					m[i],
 				},
 				Model: models.Model{
 					CreatedAt: now,
@@ -313,6 +315,5 @@ func main() {
 		panic(fmt.Errorf("failed to create database connection: %w", err))
 	}
 
-	m := seedMedia(conn.DB, 20, "uploads")
-	seedData(conn.DB, m)
+	seedData(conn.DB)
 }

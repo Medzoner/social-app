@@ -21,7 +21,7 @@ export const useProfileStore = defineStore('profile', {
 
       try {
         const res = await axios.get(`/api/users/${id}`, {
-          headers: { ...auth.getAuthHeader() }
+          headers: { ...auth.getAuthJSONHeader() }
         })
         this.profiles[id] = res.data
         return res.data

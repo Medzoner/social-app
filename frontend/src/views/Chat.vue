@@ -174,7 +174,7 @@ const fetchMessages = async (): Promise<void> => {
   loading.value = true
   try {
     const res = await axios.get(`/api/messages/${to}`, {
-      headers: { ...auth.getAuthHeader() }
+      headers: { ...auth.getAuthJSONHeader() }
     })
     nextCursor.value = res.data.next_cursor || false
     chatStore.setMessages(res.data.messages)
@@ -199,7 +199,7 @@ const fetchPreviousMessages = async (): Promise<void> => {
 
   try {
     const res = await axios.get(url, {
-      headers: { ...auth.getAuthHeader() }
+      headers: { ...auth.getAuthJSONHeader() }
     })
     chatStore.setMessages([...res.data.messages, ...messages.value])
     nextCursor.value = res.data.next_cursor || false
@@ -244,7 +244,7 @@ const send = async (): Promise<void> => {
         content: trimmed
       },
       {
-        headers: { ...auth.getAuthHeader() }
+        headers: { ...auth.getAuthJSONHeader() }
       }
     )
 
@@ -325,7 +325,7 @@ const scrollToBottom = (): void => {
 const checkOnlineStatus = async () => {
   try {
     const { data } = await axios.get(`/api/users/${to}/online`, {
-      headers: { ...auth.getAuthHeader() }
+      headers: { ...auth.getAuthJSONHeader() }
     })
     isOnline.value = data.status === 'online'
   } catch (err) {
@@ -382,7 +382,7 @@ const notifySeen = async (): Promise<void> => {
   if (to) {
     try {
       await axios.post(`/api/messages/${to}/read`, null, {
-        headers: { ...auth.getAuthHeader() }
+        headers: { ...auth.getAuthJSONHeader() }
       })
     } catch (err) {
       console.error('Erreur lors de la mise à jour du message lu', err)

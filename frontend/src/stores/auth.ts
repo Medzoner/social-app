@@ -121,7 +121,21 @@ export const useAuthStore = defineStore('auth', {
       if (type === 'refresh') {
         return { Authorization: `Bearer ${this.token.refresh_token}` }
       }
+
       return { Authorization: `Bearer ${this.token.access_token}` }
+    },
+
+    getAuthJSONHeader(type = 'access'): AuthHeader {
+      return this.getJSONHeader(this.getAuthHeader(type))
+    },
+
+    getJSONHeader(headers: AuthHeader): AuthHeader {
+      const contentType = 'application/json'
+
+      return {
+        ...headers,
+        'Content-Type': contentType,
+      }
     },
 
     getAccessToken(): string | null {

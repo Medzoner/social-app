@@ -40,9 +40,16 @@ func (h Handler) CreateComment(c *middleware.Context) {
 	}
 
 	var com comment.CreateCommentInput
-	if err := c.BindJSON(&c); err != nil {
+	if err := c.BindJSON(&com); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid comment binding"})
+		return
 	}
+
+	if com.PostID != postID {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Post ID in comment does not match path ID"})
+		return
+	}
+
 	com.UserID = c.User.ID
 	com.PostID = postID
 

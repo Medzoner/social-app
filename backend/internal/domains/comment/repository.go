@@ -36,7 +36,7 @@ func (r Repository) CreateComment(ctx context.Context, cm models.Comment) (model
 	if result := r.conn.DB.
 		Preload("User").
 		Create(&cm); result.Error != nil {
-		return models.Comment{}, result.Error
+		return cm, result.Error
 	}
 
 	return cm, nil
