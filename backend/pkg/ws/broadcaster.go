@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/gorilla/websocket"
+	"encoding/json"
 )
 
 var broadcast = make(chan string)
@@ -53,5 +54,10 @@ func (b Broadcaster) Start(ctx context.Context) {
 }
 
 func (b Broadcaster) NotifyAll(message string) {
-	broadcast <- message
+	msgJon, err := json.Marshal(map[string]string{"message": message})
+	if err != nil {
+		log.Printf("Error marshalling message: %v", err)
+		return
+	}
+	broadcast <- string(msgJon)
 }

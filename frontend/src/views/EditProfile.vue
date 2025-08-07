@@ -86,7 +86,7 @@ const updateProfile = async (): Promise<void> => {
       const formData = new FormData()
       formData.append('images', avatar.value)
       const res = await axios.post('/api/upload', formData, {
-        headers: { ...auth.getAuthJSONHeader() }
+        headers: { ...auth.getAuthHeader() }
       })
       avatarUuid = res.data?.medias[0]?.uuid
     }

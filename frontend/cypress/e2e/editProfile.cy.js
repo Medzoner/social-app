@@ -16,7 +16,7 @@ describe('Edit Profile Page', () => {
     cy.visit('/edit-profile');
     cy.get('textarea[name=bio]').clear().type('New bio');
     cy.get('button[name=save]').click();
-    cy.contains(/profile updated|profil mis à jour/i).should('exist');
+    cy.contains(/profile updated|Profil mis à jour/i).should('exist');
   });
 
   it('should navigate back to profile after save', () => {
@@ -29,7 +29,7 @@ describe('Edit Profile Page', () => {
     cy.visit('/edit-profile');
     cy.get('input[type="file"]').selectFile('./cypress/dummy.jpg');
     cy.get('button[name=save]').click();
-    cy.contains(/profile updated|profil mis à jour/i).should('exist');
+    cy.contains(/profile updated|Profil mis à jour/i).should('exist');
     cy.get('img[alt*="Avatar de l\'utilisateur"]').should('exist');
   });
 
@@ -38,7 +38,7 @@ describe('Edit Profile Page', () => {
     const longBio = 'A'.repeat(500);
     cy.get('textarea[name=bio]').clear().type(longBio);
     cy.get('button[name=save]').click();
-    cy.contains(/profile updated|profil mis à jour/i).should('exist');
+    cy.contains(/profile updated|Profil mis à jour/i).should('exist');
   });
 
   // it('should cancel changes', () => {
@@ -66,7 +66,7 @@ describe('Edit Profile Page', () => {
     cy.visit('/edit-profile');
     cy.get('textarea[name=bio]').clear().type('Bio with émojis 🎉 and special chars!');
     cy.get('button[name=save]').click();
-    cy.contains(/profile updated|profil mis à jour/i).should('exist');
+    cy.contains(/profile updated|Profil mis à jour/i).should('exist');
   });
 
   // it('should validate email format', () => {
