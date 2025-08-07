@@ -20,13 +20,14 @@
     <form @submit.prevent="updateProfile" enctype="multipart/form-data" class="flex flex-col gap-4">
       <textarea
         v-model="bio"
+        name="bio"
         placeholder="Votre bio"
         class="rounded border p-2"
         rows="4"
       ></textarea>
 
       <input type="file" @change="handleFileUpload" class="p-2" />
-      <button type="submit" class="rounded bg-blue-600 p-2 text-white">Mettre à jour</button>
+      <button name="save" type="submit" class="rounded bg-blue-600 p-2 text-white">Mettre à jour</button>
     </form>
   </div>
 </template>

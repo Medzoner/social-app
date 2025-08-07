@@ -220,3 +220,17 @@ Pour toute question ou problème :
 ---
 
 **⚠️ IMPORTANT** : Cette application est maintenant sécurisée et prête pour la production, mais nécessite une configuration appropriée des variables d'environnement avant tout déploiement. 
+
+## Tests End-to-End (E2E) avec Cypress
+
+1. Lancer le frontend localement :
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+2. Dans un autre terminal, lancer les tests E2E :
+   ```bash
+   npm run test:e2e
+   ```
+
+Les tests couvrent les principales vues : Login, Register, Feed, Profile, Notifications, Chat. 

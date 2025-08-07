@@ -5,12 +5,14 @@
     <form @submit.prevent="login" class="flex flex-col gap-3" message="">
       <input
         v-model="username"
+        name="username"
         placeholder="Username"
         class="rounded border p-2"
         autocomplete="username"
       />
       <input
         v-model="password"
+        name="password"
         type="password"
         placeholder="Password"
         class="rounded border p-2"
