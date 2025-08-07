@@ -48,7 +48,7 @@ func NewUseCase(r Repository, cfg config.Auth, c *ws.Connector, s notifier.SMSNo
 	}
 }
 
-func (u UseCase) Register(ctx context.Context, input auth.RegisterInput) error {
+func (u UseCase) Register(ctx context.Context, input auth.RegisterInput) (models.User, error) {
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(input.Password), 14)
 	user := models.User{
 		Username: input.Username,
@@ -57,12 +57,12 @@ func (u UseCase) Register(ctx context.Context, input auth.RegisterInput) error {
 		Role:     "user",
 	}
 
-	err := u.repo.Register(ctx, user)
+	user, err := u.repo.Register(ctx, user)
 	if err != nil {
-		return fmt.Errorf("failed to register user: %w", err)
+		return user, fmt.Errorf("failed to register user: %w", err)
 	}
 
-	return nil
+	return user, nil
 }
 
 func (u UseCase) Login(ctx context.Context, input auth.LoginInput) (auth.JWTToken, error) {
@@ -206,21 +206,30 @@ func generateToken(user models.User, ttl time.Duration, extra map[string]any, ke
 	return ts, nil
 }
 
-func (u UseCase) Verify(ctx context.Context, userID uint64, code string) error {
+func (u UseCase) Verify(ctx context.Context, userID uint64, code string) (auth.JWTToken, error) {
 	user, err := u.repo.GetProfile(ctx, fmt.Sprint(userID))
 	if err != nil {
-		return fmt.Errorf("failed to get user profile: %w", err)
+		return auth.JWTToken{}, fmt.Errorf("failed to get user profile: %w", err)
 	}
 
 	if user.VerifiedCode != code {
-		return fmt.Errorf("invalid code")
+		return auth.JWTToken{}, fmt.Errorf("invalid code")
 	}
 
 	user.Verified = true
 	user.VerifiedCode = ""
 	user.VerifiedValidateAt = time.Now().Add(30 * 24 * time.Hour)
 
-	return u.repo.Update(ctx, user)
+	if err := u.repo.Update(ctx, user); err != nil {
+		return auth.JWTToken{}, fmt.Errorf("failed to update user profile: %w", err)
+	}
+
+	tk, err := u.generateJWT(user)
+	if err != nil {
+		return auth.JWTToken{}, fmt.Errorf("failed to generate JWT token: %w", err)
+	}
+
+	return tk, nil
 }
 
 func (u UseCase) SendEmailVerification(ctx context.Context, userID uint64) error {
@@ -309,7 +318,8 @@ func (u UseCase) OauthCallback(ctx context.Context, input auth.OauthInput) (auth
 			Role:     "user",
 		}
 
-		if err := u.repo.Register(ctx, user); err != nil {
+		user, err = u.repo.Register(ctx, user)
+		if err != nil {
 			return auth.JWTToken{}, fmt.Errorf("failed to register user: %w", err)
 		}
 	}

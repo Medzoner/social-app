@@ -2,7 +2,7 @@
 <template>
   <div class="mx-auto max-w-md p-4">
     <h2 class="mb-4 text-xl font-bold">Connexion</h2>
-    <form @submit.prevent="login" class="flex flex-col gap-3">
+    <form @submit.prevent="login" class="flex flex-col gap-3" message="">
       <input
         v-model="username"
         placeholder="Username"
@@ -19,8 +19,12 @@
       <button type="submit" class="rounded bg-blue-600 p-2 text-white">Login</button>
     </form>
 
-    <!-- Composant Google Login -->
-    <Google @notify="handleNotification" />
+    <!-- Redirect Oauth Login -->
+    <div class="mt-4">
+      <RouterLink to="oauth-login" class="mt-4 rounded bg-red-500 p-2 text-white">
+        Se connecter avec Google
+      </RouterLink>
+    </div>
 
     <!-- Message de notification -->
     <Form
@@ -70,14 +74,6 @@ const login = async (): Promise<void> => {
   } catch (err) {
     console.error('Erreur de connexion :', err)
     notification.value = 'Identifiants incorrects ou problème de serveur.'
-  }
-}
-
-const handleNotification = (msg: string): void => {
-  notification.value = msg
-
-  if (auth.isAuthenticated) {
-    router.push('/feed')
   }
 }
 </script>

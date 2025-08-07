@@ -41,7 +41,7 @@ type Sso struct {
 type SsoGoogle struct {
 	ClientID     string          `env:"CLIENT_ID"     envDefault:"xxxxxx.apps.googleusercontent.com"`
 	ClientSecret string          `env:"CLIENT_SECRET" envDefault:"GOCSPX-xxxxxxx"`
-	RedirectURL  string          `env:"REDIRECT_URL"  envDefault:"http://localhost:3222/oauth/google/callback"`
+	RedirectURL  string          `env:"REDIRECT_URL"  envDefault:"http://localhost:5173/oauth-callback"`
 	ScopesRaw    string          `env:"SCOPES_RAW"    envDefault:"https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid"`
 	Endpoint     oauth2.Endpoint `env:"ENDPOINT"`
 	Scopes       []string

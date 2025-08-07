@@ -37,7 +37,7 @@ func (h Handler) Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input binding"})
 	}
 
-	err := h.usecase.Register(c.Request.Context(), input)
+	_, err := h.usecase.Register(c.Request.Context(), input)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to register user"})
 		return
@@ -119,13 +119,13 @@ func (h Handler) Verify(c *middleware.Context) {
 		return
 	}
 
-	err := h.usecase.Verify(c.Request.Context(), input.UserID, input.Code)
+	tk, err := h.usecase.Verify(c.Request.Context(), input.UserID, input.Code)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Échec de la vérification"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Succesfully verified"})
+	c.JSON(http.StatusOK, tk)
 }
 
 func (h Handler) RequestVerification(c *middleware.Context) {
@@ -154,7 +154,10 @@ func (h Handler) RequestVerification(c *middleware.Context) {
 
 func (h Handler) OauthLogin(context *gin.Context) {
 	resp := h.usecase.OauthLogin(context.Request.Context())
-	context.Redirect(http.StatusFound, resp)
+
+	context.JSON(http.StatusOK, gin.H{
+		"oauth_url": resp,
+	})
 }
 
 func (h Handler) OauthCallback(context *gin.Context) {
@@ -179,14 +182,11 @@ func (h Handler) OauthCallback(context *gin.Context) {
 		return
 	}
 
-	redirect := fmt.Sprintf(
-		"http://localhost:5173/oauth-callback?access_token=%s&refresh_token=%s&id_token=%s",
-		jwt.AccessToken,
-		jwt.RefreshToken,
-		jwt.IDToken,
-	)
-
-	context.Redirect(http.StatusFound, redirect)
+	context.JSON(http.StatusOK, gin.H{
+		"access_token":  jwt.AccessToken,
+		"refresh_token": jwt.RefreshToken,
+		"id_token":      jwt.IDToken,
+	})
 }
 
 func (h Handler) IsUserOnline(context *middleware.Context) {

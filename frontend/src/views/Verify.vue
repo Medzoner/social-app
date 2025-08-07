@@ -70,16 +70,23 @@ const verifyCode = async (): Promise<void> => {
 
   try {
     const endpoint = '/api/profile/verify'
-    await axios.post(endpoint, {
+    const res = await axios.post(endpoint, {
       code: code.value,
       id: parseInt(localStorage.getItem(tmpUserIdKey)) || auth.user.id,
       type: mode.value === 'email' ? 'email' : 'phone'
     })
     successMessage.value = `✅ ${mode.value === 'email' ? 'Email' : 'Téléphone'} vérifié avec succès`
-    await auth.refreshToken()
-    setTimeout(() => {
-      router.push('/')
+
+    if (!res.data.access_token) {
+      await auth.refreshToken()
+      return
+    }
+
+    auth.loginWithToken(res.data)
+    setTimeout(async () => {
+      await router.push('/')
     }, 2000)
+    return
   } catch (err) {
     errorMessage.value = 'Code invalide ou expiré.'
   } finally {

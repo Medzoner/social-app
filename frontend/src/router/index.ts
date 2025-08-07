@@ -10,6 +10,7 @@ import ChatList from '../views/ChatList.vue'
 import Verify from '../views/Verify.vue'
 import { useAuthStore } from '@/stores/auth'
 import About from '../views/About.vue'
+import OAuthLogin from '../views/OAuthLogin.vue'
 import OAuthCallback from '../views/OAuthCallback.vue'
 
 export const routeNames = {
@@ -23,6 +24,7 @@ export const routeNames = {
   chatList: 'chats',
   verify: 'verify',
   about: 'about',
+  oauthLogin: 'oauth-login',
   oauthCallback: 'oauth-callback'
 }
 
@@ -31,6 +33,7 @@ export const routes: Readonly<RouteRecordRaw[]> = [
   { path: `/${routeNames.about}`, component: About },
   { path: `/${routeNames.login}`, component: Login },
   { path: `/${routeNames.register}`, component: Register },
+  { path: `/${routeNames.oauthLogin}`, component: OAuthLogin, meta: { requiresAuth: false } },
   { path: `/${routeNames.oauthCallback}`, component: OAuthCallback, meta: { requiresAuth: false } },
   { path: `/${routeNames.feed}`, component: Feed, meta: { requiresAuth: true } },
   { path: `/${routeNames.chatList}`, component: ChatList, meta: { requiresAuth: true } },

@@ -11,7 +11,7 @@ import (
 )
 
 type AuthRepository interface {
-	Register(ctx context.Context, user models.User) error
+	Register(ctx context.Context, user models.User) (models.User, error)
 	Login(ctx context.Context, username string) (models.User, error)
 	GetProfile(ctx context.Context, id string) (models.User, error)
 	Update(ctx context.Context, user models.User) error
@@ -54,13 +54,13 @@ func (r Repository) Update(ctx context.Context, user models.User) error {
 	return r.conn.DB.Save(&user).Error
 }
 
-func (r Repository) Register(ctx context.Context, user models.User) error {
+func (r Repository) Register(ctx context.Context, user models.User) (models.User, error) {
 	result := r.conn.DB.
 		Create(&user)
 	if result.Error != nil {
-		return fmt.Errorf("failed to create user: %w", result.Error)
+		return user, fmt.Errorf("failed to create user: %w", result.Error)
 	}
-	return nil
+	return user, nil
 }
 
 func (r Repository) Login(ctx context.Context, username string) (models.User, error) {
