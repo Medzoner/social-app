@@ -34,6 +34,7 @@ var (
 			"SMS",
 			"Mailtrap",
 			"LLM",
+			"Media",
 		),
 		connector.NewDBConn,
 	)

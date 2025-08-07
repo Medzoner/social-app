@@ -18,6 +18,7 @@ type Config struct {
 	LLM      LLM      `envPrefix:"LLM_"`
 	Mailtrap Mailtrap `envPrefix:"MAILER_"`
 	Redis    Redis    `envPrefix:"REDIS_"`
+	Media    Media    `envPrefix:"MEDIA_"`
 }
 
 type DB struct {
@@ -81,6 +82,10 @@ type SMS struct {
 
 type LLM struct {
 	URL string `env:"LLM_URL" envDefault:"http://medzoner-srv.lan:11434/api"`
+}
+
+type Media struct {
+	BaseURL string `env:"BASE_URL" envDefault:"http://localhost:3222"`
 }
 
 func NewConfig() (*Config, error) {

@@ -61,11 +61,12 @@ const login = async (): Promise<void> => {
 
     if (res.data.need2fa) {
       localStorage.setItem('tmp_user_id', res.data.id)
-      router.push('/verify')
+      await router.push('/verify')
+      return
     }
 
     auth.loginWithToken(res.data)
-    router.push('/feed')
+    await router.push('/feed')
   } catch (err) {
     console.error('Erreur de connexion :', err)
     notification.value = 'Identifiants incorrects ou problème de serveur.'

@@ -40,7 +40,8 @@ func InitServer(ctx context.Context) (server.Server, error) {
 	}
 	repository := post.NewRepository(dbConn)
 	mediaRepository := media.NewRepository(dbConn)
-	useCase := media.NewUseCase(mediaRepository)
+	configMedia := configConfig.Media
+	useCase := media.NewUseCase(mediaRepository, configMedia)
 	redis := configConfig.Redis
 	redisConnector := connector.NewRedisConnector(redis)
 	wsConnector := ws.NewConnector(redisConnector)
@@ -55,7 +56,7 @@ func InitServer(ctx context.Context) (server.Server, error) {
 	notifierSMS := notifier.NewSMS(sms)
 	mailtrap := configConfig.Mailtrap
 	mailTrap := notifier.NewMailTrap(mailtrap)
-	profileUseCase := profile.NewUseCase(profileRepository, notifierSMS, mailTrap)
+	profileUseCase := profile.NewUseCase(profileRepository, useCase, notifierSMS, mailTrap)
 	profileHandler := profile.NewHandler(profileUseCase, useCase)
 	chatRepository := chat.NewRepository(dbConn)
 	chatUseCase := chat.NewUseCase(chatRepository)
@@ -92,6 +93,7 @@ var (
 		"SMS",
 		"Mailtrap",
 		"LLM",
+		"Media",
 	), connector.NewDBConn,
 	)
 	NotifierWiring   = wire.NewSet(notifier.NewSMS, notifier.NewMailTrap, wire.Bind(new(notifier.Mailerx), new(*notifier.MailTrap)), wire.Bind(new(notifier.SMSNotifier), new(*notifier.SMS)))

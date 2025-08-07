@@ -6,6 +6,8 @@ import (
 
 	"social-app/internal/connector"
 	"social-app/internal/models"
+	"gorm.io/gorm"
+	"errors"
 )
 
 type AuthRepository interface {
@@ -93,6 +95,9 @@ func (r Repository) GetByEmail(ctx context.Context, email string) (models.User, 
 	var user models.User
 	result := r.conn.DB.Where("email = ?", email).First(&user)
 	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return models.User{}, nil // No user found with the given email
+		}
 		return user, fmt.Errorf("failed to find user by email: %w", result.Error)
 	}
 

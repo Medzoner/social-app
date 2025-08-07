@@ -3,7 +3,7 @@
     <div v-if="profile" class="mb-6 flex items-center gap-4">
       <AvatarImage
         v-if="profile.avatar_media?.file_type.includes(MediaType.Image)"
-        :src="'/api/' + profile.avatar_media.file_path"
+        :src="profile.avatar_media.file_path"
         size="28"
         :online="isOnline"
         alt="Avatar de {{ profile.username }}"
@@ -37,7 +37,7 @@
               v-if="
                 m.sender_id !== myId && profile?.avatar_media?.file_type.includes(MediaType.Image)
               "
-              :src="'/api/' + profile.avatar_media.file_path"
+              :src="profile.avatar_media.file_path"
               size="24"
               class="mt-1"
             />

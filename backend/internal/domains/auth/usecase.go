@@ -301,6 +301,18 @@ func (u UseCase) OauthCallback(ctx context.Context, input auth.OauthInput) (auth
 	if err != nil {
 		return auth.JWTToken{}, fmt.Errorf("failed to login user: %w", err)
 	}
+	if user.IsZero() {
+		user = models.User{
+			Username: userInfo.Name,
+			Email:    userInfo.Email,
+			Avatar:   userInfo.Picture,
+			Role:     "user",
+		}
+
+		if err := u.repo.Register(ctx, user); err != nil {
+			return auth.JWTToken{}, fmt.Errorf("failed to register user: %w", err)
+		}
+	}
 
 	if !user.Verified || user.VerifiedExpires.Before(time.Now()) {
 		if err := u.handleVerificationPending(ctx, user); err != nil {
@@ -315,19 +327,7 @@ func (u UseCase) OauthCallback(ctx context.Context, input auth.OauthInput) (auth
 		}, nil
 	}
 
-	if user.IsZero() {
-		user = models.User{
-			Username: userInfo.Name,
-			Email:    userInfo.Email,
-			Avatar:   userInfo.Picture,
-			Role:     "user",
-			Verified: true,
-		}
-
-		if err := u.repo.Register(ctx, user); err != nil {
-			return auth.JWTToken{}, fmt.Errorf("failed to register user: %w", err)
-		}
-	} else {
+	if !user.IsZero() {
 		user.Username = userInfo.Name
 		user.Avatar = userInfo.Picture
 		if err := u.repo.Update(ctx, user); err != nil {

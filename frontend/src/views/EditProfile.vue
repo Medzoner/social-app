@@ -12,8 +12,8 @@
       {{ notification }}
     </div>
     <AvatarImage
-      v-if="media && media.file_type.includes(MediaType.Image)"
-      :src="'/api/' + media.file_path"
+      v-if="media?.file_path"
+      :src="media.file_path"
       size="32"
       alt="Avatar de l'utilisateur"
     />
@@ -83,11 +83,11 @@ const updateProfile = async (): Promise<void> => {
 
     if (avatar.value) {
       const formData = new FormData()
-      formData.append(MediaType.Image, avatar.value)
+      formData.append('images', avatar.value)
       const res = await axios.post('/api/upload', formData, {
         headers: { ...auth.getAuthHeader() }
       })
-      avatarUuid = res.data.media.uuid
+      avatarUuid = res.data?.medias[0]?.uuid
     }
 
     const res = await axios.patch(

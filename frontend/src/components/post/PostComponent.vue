@@ -5,7 +5,7 @@
         <RouterLink :to="`/profile/${post.user.id}`" class="text-blue-600 hover:underline">
           <AvatarImage
             v-if="post?.user?.avatar_media?.file_type.includes(MediaType.Image)"
-            :src="'/api/' + post.user.avatar_media.file_path"
+            :src="post.user.avatar_media.file_path"
             size="28"
             alt="Avatar de {{ post.user.username }}"
             class="mr-2 inline-block h-7 w-7 rounded-full bg-gray-300 text-center text-xs leading-7 text-white"
@@ -24,7 +24,7 @@
         <template v-for="media in post.medias" :key="media.id">
           <img
             v-if="media.file_type.includes(MediaType.Image)"
-            :src="'/api/' + media.file_path"
+            :src="media.file_path"
             class="max-w-full rounded"
             alt=""
           />
@@ -33,11 +33,11 @@
             controls
             class="max-w-full rounded"
           >
-            <source :src="'/api/' + media.file_path" :type="`video/${media.file_ext}`" />
+            <source :src="media.file_path" :type="`video/${media.file_ext}`" />
             Your browser does not support the video tag.
           </video>
           <audio v-else-if="media.file_type.includes(MediaType.Audio)" controls class="w-full">
-            <source :src="'/api/' + media.file_path" :type="`audio/${media.file_ext}`" />
+            <source :src="media.file_path" :type="`audio/${media.file_ext}`" />
             Your browser does not support the audio element.
           </audio>
           <!-- Optionally handle other file types -->

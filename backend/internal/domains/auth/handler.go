@@ -7,6 +7,7 @@ import (
 	"social-app/api/auth"
 	"social-app/api/profile"
 	"social-app/pkg/middleware"
+	"fmt"
 )
 
 type Handler struct {
@@ -64,6 +65,7 @@ func (h Handler) Login(c *gin.Context) {
 
 	jwt, err := h.usecase.Login(c.Request.Context(), input)
 	if err != nil {
+		fmt.Println("Error during login:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to login user"})
 		return
 	}
@@ -71,6 +73,7 @@ func (h Handler) Login(c *gin.Context) {
 	if !jwt.VerifyResponse.Verified {
 		c.JSON(http.StatusAccepted, gin.H{
 			"verified": false,
+			"need2fa":  true,
 			"id":       jwt.VerifyResponse.ID,
 			"username": jwt.VerifyResponse.Username,
 		})
@@ -176,7 +179,14 @@ func (h Handler) OauthCallback(context *gin.Context) {
 		return
 	}
 
-	context.Redirect(http.StatusFound, "http://localhost:5173/oauth-callback?access_token="+jwt.AccessToken+"&refresh_token="+jwt.RefreshToken+"&id_token="+jwt.IDToken)
+	redirect := fmt.Sprintf(
+		"http://localhost:5173/oauth-callback?access_token=%s&refresh_token=%s&id_token=%s",
+		jwt.AccessToken,
+		jwt.RefreshToken,
+		jwt.IDToken,
+	)
+
+	context.Redirect(http.StatusFound, redirect)
 }
 
 func (h Handler) IsUserOnline(context *middleware.Context) {

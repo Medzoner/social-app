@@ -10,6 +10,7 @@ import (
 
 	"github.com/google/uuid"
 	"social-app/internal/models"
+	"social-app/internal/config"
 )
 
 type MimeInfo struct {
@@ -37,11 +38,13 @@ var allowedMIMEs = map[string]MimeInfo{
 
 type UseCase struct {
 	repo Repository
+	cfg  config.Media
 }
 
-func NewUseCase(r Repository) UseCase {
+func NewUseCase(r Repository, cfg config.Media) UseCase {
 	return UseCase{
 		repo: r,
+		cfg:  cfg,
 	}
 }
 
@@ -134,4 +137,8 @@ func (u UseCase) SaveUploadedFile(ctx context.Context, file *multipart.FileHeade
 	}
 
 	return nil
+}
+
+func (u UseCase) ResolvePath(filePath string) string {
+	return u.cfg.BaseURL + "/" + filePath
 }

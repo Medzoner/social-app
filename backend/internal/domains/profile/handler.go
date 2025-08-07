@@ -1,17 +1,12 @@
 package profile
 
 import (
-	"context"
-	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"social-app/api/profile"
 	"social-app/internal/domains/media"
-	"social-app/internal/models"
 	"social-app/pkg/middleware"
 )
 
@@ -51,18 +46,6 @@ func (h Handler) GetProfile(c *middleware.Context) {
 		return
 	}
 
-	m, err := h.mUC.GetMedia(c.Request.Context(), uuid.MustParse(user.Avatar))
-	if err != nil {
-		log.Printf("Failed to get media for user %s: %v", id, err)
-	}
-
-	user.AvatarMedia = models.AvatarMedia{
-		FileName: m.FileName,
-		FileSize: m.FileSize,
-		FileType: m.FileType,
-		FilePath: m.FilePath,
-	}
-
 	c.JSON(http.StatusOK, user)
 }
 
@@ -98,11 +81,6 @@ func (h Handler) UpdateProfile(c *middleware.Context) {
 	}
 	if input.Avatar != nil {
 		user.Avatar = *input.Avatar
-		user.AvatarMedia, err = h.getAvatar(c.Request.Context(), user)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get avatar media"})
-			return
-		}
 	}
 	if input.Email != nil {
 		user.Email = *input.Email
@@ -115,20 +93,4 @@ func (h Handler) UpdateProfile(c *middleware.Context) {
 	}
 
 	c.JSON(http.StatusOK, updatedUser)
-}
-
-func (h Handler) getAvatar(ctx context.Context, user models.User) (models.AvatarMedia, error) {
-	if user.Avatar == "" {
-		return models.AvatarMedia{}, nil
-	}
-	m, err := h.mUC.GetMedia(ctx, uuid.MustParse(user.Avatar))
-	if err != nil {
-		return models.AvatarMedia{}, fmt.Errorf("failed to get media for user %d: %w", user.ID, err)
-	}
-	return models.AvatarMedia{
-		FileName: m.FileName,
-		FileSize: m.FileSize,
-		FileType: m.FileType,
-		FilePath: m.FilePath,
-	}, nil
 }

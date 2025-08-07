@@ -169,7 +169,9 @@ func seedData(db *gorm.DB, m []models.Media) {
 			post := models.Post{
 				Content: fmt.Sprintf("Post #%d by %s", j, users[i].Username),
 				UserID:  users[i].ID,
-				Medias:  m,
+				Medias: []models.Media{
+					m[j],
+				},
 				Model: models.Model{
 					CreatedAt: now,
 					UpdatedAt: now,

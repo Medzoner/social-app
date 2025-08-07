@@ -3,7 +3,7 @@
     <div class="flex flex-col items-center gap-4 text-center">
       <AvatarImage
         v-if="media && media.file_type.includes(MediaType.Image)"
-        :src="'/api/' + media.file_path"
+        :src="media.file_path"
         size="96"
         alt="Avatar de l'utilisateur"
       />

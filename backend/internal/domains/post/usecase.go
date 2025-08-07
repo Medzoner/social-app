@@ -9,6 +9,7 @@ import (
 	"social-app/internal/domains/media"
 	"social-app/internal/models"
 	"social-app/pkg/ws"
+	"github.com/akrennmair/slice"
 )
 
 type UseCase struct {
@@ -50,6 +51,15 @@ func (u UseCase) CreatePost(ctx context.Context, input post.CreatePostInput) (mo
 		return p, fmt.Errorf("error creating post: %w", err)
 	}
 
+	result.Medias = slice.Map(m, func(media models.Media) models.Media {
+		return models.Media{
+			FileName: media.FileName,
+			FileSize: media.FileSize,
+			FileType: media.FileType,
+			FilePath: u.mUC.ResolvePath(media.FilePath),
+		}
+	})
+
 	u.bc.NotifyAll("{\"type\": \"post_created\", \"data\": \"new post\"}")
 	return result, nil
 }
@@ -66,6 +76,15 @@ func (u UseCase) GetPosts(ctx context.Context, cursor, id string) (models.PostLi
 			return models.PostList{}, fmt.Errorf("error fetching avatar for post %d: %w", p.Posts[i].ID, err)
 		}
 		p.Posts[i].User.AvatarMedia = avatar
+
+		p.Posts[i].Medias = slice.Map(p.Posts[i].Medias, func(media models.Media) models.Media {
+			return models.Media{
+				FileName: media.FileName,
+				FileSize: media.FileSize,
+				FileType: media.FileType,
+				FilePath: u.mUC.ResolvePath(media.FilePath),
+			}
+		})
 	}
 
 	return p, nil

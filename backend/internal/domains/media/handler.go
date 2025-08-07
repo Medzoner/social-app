@@ -41,6 +41,11 @@ func (h Handler) UploadImage(c *middleware.Context) {
 	}
 	formFiles := mf.File["images"]
 
+	if len(formFiles) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No file is received"})
+		return
+	}
+
 	ms := make([]models.Media, len(formFiles))
 	wg := sync.WaitGroup{}
 	for i := range formFiles {
