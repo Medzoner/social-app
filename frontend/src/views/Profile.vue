@@ -21,14 +21,12 @@
         <!-- Menu -->
         <div class="mb-6 border-b border-gray-200">
           <nav class="flex gap-6 text-gray-600">
-            <!-- Onglet actuel -->
             <span class="cursor-default border-b-2 border-blue-500 pb-2 text-blue-600">
               Publications
             </span>
 
-            <!-- Lien vers le chat -->
             <RouterLink
-              :to="`/chats`"
+              :to="`/chat/${profile.id}`"
               class="border-b-2 border-transparent pb-2 hover:border-blue-300 hover:text-blue-600"
             >
               Chat
@@ -41,17 +39,11 @@
           <h3 class="mb-4 text-lg font-medium text-gray-700">Ses publications</h3>
           <PostComponent
             @notify="notification = $event"
-            :profileId="route.params.id as string"
+            :profileId="Number(profile.id)"
             :searchQuery="searchQuery"
           />
         </div>
       </div>
-
-      <PostComponent
-        @notify="notification = $event"
-        :profileId="route.params.id as string"
-        :searchQuery="searchQuery"
-      />
     </div>
   </div>
 </template>

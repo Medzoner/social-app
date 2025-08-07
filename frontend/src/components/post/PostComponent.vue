@@ -82,7 +82,10 @@ const loading = ref(false)
 const nextCursor = ref(null)
 
 const props = defineProps({
-  profileId: String,
+  profileId: {
+    type: Number,
+    default: null
+  },
   searchQuery: {
     type: String,
     default: ''

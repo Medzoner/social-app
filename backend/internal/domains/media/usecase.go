@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 	"social-app/internal/models"
 	"social-app/internal/config"
+	"github.com/akrennmair/slice"
 )
 
 type MimeInfo struct {
@@ -53,6 +54,7 @@ func (u UseCase) GetMedia(ctx context.Context, mediaUuid uuid.UUID) (models.Medi
 	if err != nil {
 		return models.Media{}, fmt.Errorf("failed to get media: %w", err)
 	}
+	m.FilePath = u.ResolvePath(m.FilePath)
 	return m, nil
 }
 
@@ -61,6 +63,10 @@ func (u UseCase) GetMedias(ctx context.Context, mediaUuids []uuid.UUID) ([]model
 	if err != nil {
 		return nil, fmt.Errorf("failed to get media: %w", err)
 	}
+	m = slice.Map(m, func(media models.Media) models.Media {
+		media.FilePath = u.ResolvePath(media.FilePath)
+		return media
+	})
 	return m, nil
 }
 

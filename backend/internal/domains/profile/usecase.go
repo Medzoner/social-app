@@ -83,7 +83,7 @@ func (u UseCase) getAvatar(ctx context.Context, profile models.User) (models.Use
 			FileName: m.FileName,
 			FileSize: m.FileSize,
 			FileType: m.FileType,
-			FilePath: u.mediaUC.ResolvePath(m.FilePath),
+			FilePath: m.FilePath,
 		}
 	}
 	return profile, nil
