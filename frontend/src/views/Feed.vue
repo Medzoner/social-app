@@ -12,7 +12,6 @@
       Créer un post
     </button>
 
-    <!-- ✅ Modal de création de post -->
     <BaseModal :show="showModal" @close="closeModal">
       <template #header>
         <h3 class="mb-4 text-lg font-semibold">Créer un post</h3>
@@ -21,11 +20,12 @@
       <form @submit.prevent="createPost" enctype="multipart/form-data" class="space-y-3">
         <textarea
           v-model="content"
+          name="content"
           placeholder="Quoi de neuf ?"
           class="w-full resize-none rounded border p-2"
           rows="4"
         ></textarea>
-        <!-- Dans ton formulaire -->
+
         <div
           class="w-full cursor-pointer rounded border-2 border-dashed border-gray-300 p-4 text-center hover:bg-gray-50"
           @dragover.prevent
@@ -52,12 +52,12 @@
 
         <ImagePreview :files="files" />
 
-        <button type="submit" class="w-full rounded bg-blue-600 py-2 text-white">Publier</button>
+        <button name="publish" type="submit" class="w-full rounded bg-blue-600 py-2 text-white">Publier</button>
       </form>
     </BaseModal>
 
     <!-- ✅ Notification -->
-    <div v-if="notification" class="mt-4 rounded bg-green-100 p-2 text-green-800">
+    <div id="notification" v-if="notification" class="mt-4 rounded bg-green-100 p-2 text-green-800">
       {{ notification }}
     </div>
 
@@ -77,7 +77,6 @@ import { MediaTypes, MediaType } from '@/types'
 const auth = useAuthStore()
 const content = ref('')
 const files = ref<File[]>([])
-const image = ref<File | null>(null)
 const previewFiles = ref<
   { url: string; type: MediaType.Image | MediaType.Video | MediaType.Audio | 'other' }[]
 >([])

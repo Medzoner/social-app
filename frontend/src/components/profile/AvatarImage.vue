@@ -32,7 +32,7 @@ const props = defineProps({
   src: String,
   alt: {
     type: String,
-    default: 'Avatar'
+    default: 'avatar'
   },
   size: {
     type: [String, Number],
