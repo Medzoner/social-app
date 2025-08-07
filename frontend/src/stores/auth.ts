@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { jwtDecode } from 'jwt-decode'
 import axios from 'axios'
-import router, {routeNames, routes} from '@/router'
+import router, { routeNames, routes } from '@/router'
 import { AuthHeader, JwtToken, JwtUser } from '@/types'
 import { initNotificationSocket } from '@/notifications/ws'
 
@@ -134,7 +134,7 @@ export const useAuthStore = defineStore('auth', {
 
       return {
         ...headers,
-        'Content-Type': contentType,
+        'Content-Type': contentType
       }
     },
 

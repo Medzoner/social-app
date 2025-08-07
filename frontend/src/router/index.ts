@@ -40,8 +40,17 @@ export const routes: Readonly<RouteRecordRaw[]> = [
   { path: `/${routeNames.chat}/:id`, component: Chat, meta: { requiresAuth: true } },
   { path: `/${routeNames.profile}/:id`, component: Profile, meta: { requiresAuth: true } },
   { path: `/${routeNames.editProfile}`, component: EditProfile, meta: { requiresAuth: true } },
-  { path: `/${routeNames.admin}`, component: Admin, meta: { requiresAuth: true, requiresAdmin: true } },
-  { path: `/${routeNames.verify}`, name: `${routeNames.verify}`, component: Verify, meta: { requiresAuth: false } }
+  {
+    path: `/${routeNames.admin}`,
+    component: Admin,
+    meta: { requiresAuth: true, requiresAdmin: true }
+  },
+  {
+    path: `/${routeNames.verify}`,
+    name: `${routeNames.verify}`,
+    component: Verify,
+    meta: { requiresAuth: false }
+  }
 ]
 
 const router = createRouter({
@@ -63,7 +72,11 @@ router.beforeEach((to, from, next): void => {
     return next(`/${routeNames.login}`)
   }
 
-  if (!auth?.user?.verified && to.meta.requiresAdmin && auth.user?.role !== `/${routeNames.admin}`) {
+  if (
+    !auth?.user?.verified &&
+    to.meta.requiresAdmin &&
+    auth.user?.role !== `/${routeNames.admin}`
+  ) {
     return next(`/${routeNames.feed}`)
   }
 

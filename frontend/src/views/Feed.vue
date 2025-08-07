@@ -53,7 +53,9 @@
 
         <ImagePreview :files="files" />
 
-        <button name="publish" type="submit" class="w-full rounded bg-blue-600 py-2 text-white">Publier</button>
+        <button name="publish" type="submit" class="w-full rounded bg-blue-600 py-2 text-white">
+          Publier
+        </button>
       </form>
     </BaseModal>
 

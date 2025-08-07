@@ -27,5 +27,4 @@ onMounted(async () => {
     console.error('Error fetching redirect URL:', err)
   }
 })
-
 </script>

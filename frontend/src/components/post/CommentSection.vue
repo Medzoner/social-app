@@ -44,7 +44,9 @@
       class="mt-2 w-full rounded border p-1"
     />
 
-    <button name="submit-comment" @click="send" class="mt-1 rounded bg-gray-200 px-2 py-1 text-sm">Envoyer</button>
+    <button name="submit-comment" @click="send" class="mt-1 rounded bg-gray-200 px-2 py-1 text-sm">
+      Envoyer
+    </button>
   </div>
 </template>
 

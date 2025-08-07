@@ -1,6 +1,10 @@
 <template>
   <ul class="mt-6 space-y-4">
-    <li v-for="post in filteredPosts" :key="post.id" class="post-content rounded border bg-white p-4 shadow-sm">
+    <li
+      v-for="post in filteredPosts"
+      :key="post.id"
+      class="post-content rounded border bg-white p-4 shadow-sm"
+    >
       <small>
         <RouterLink :to="`/profile/${post.user.id}`" class="text-blue-600 hover:underline">
           <AvatarImage

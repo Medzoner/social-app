@@ -26,7 +26,7 @@ onMounted(async () => {
     id_token: '',
     refresh_token: '',
     verified: false,
-    id: '',
+    id: ''
   }
   try {
     const res = await axios.get(`/api/oauth/google/callback?code=${code}`)

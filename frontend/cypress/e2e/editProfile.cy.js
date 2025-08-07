@@ -1,45 +1,54 @@
-import { loginHelper } from './_helper';
+import { loginHelper } from './_helper'
 
 describe('Edit Profile Page', () => {
   beforeEach(() => {
     loginHelper()
-  });
+  })
 
   it('should display edit profile form', () => {
-    cy.visit('/edit-profile');
-    cy.get( 'form').should('exist');
-    cy.get('input').should('have.length.at.least', 1);
-    cy.get('button[name=save]').should('exist');
-  });
+    cy.visit('/edit-profile')
+    cy.get('form').should('exist')
+    cy.get('input').should('have.length.at.least', 1)
+    cy.get('button[name=save]').should('exist')
+  })
 
   it('should update profile information', () => {
-    cy.visit('/edit-profile');
-    cy.get('textarea[name=bio]').clear().type('New bio');
-    cy.get('button[name=save]').click();
-    cy.contains(/profile updated|Profil mis à jour/i).should('exist');
-  });
+    cy.visit('/edit-profile')
+    cy.get('textarea[name=bio]')
+      .clear()
+      .type('New bio')
+    cy.get('button[name=save]')
+      .click()
+    cy.contains(/profile updated|Profil mis à jour/i).should('exist')
+  })
 
   it('should navigate back to profile after save', () => {
-    cy.visit('/edit-profile');
-    cy.get('button[name=save]').click();
-    cy.url().should('include', '/edit-profile');
-  });
+    cy.visit('/edit-profile')
+    cy.get('button[name=save]')
+      .click()
+    cy.url().should('include', '/edit-profile')
+  })
 
   it('should upload profile avatar', () => {
-    cy.visit('/edit-profile');
-    cy.get('input[type="file"]').selectFile('./cypress/dummy.jpg');
-    cy.get('button[name=save]').click();
-    cy.contains(/profile updated|Profil mis à jour/i).should('exist');
-    cy.get('img[alt*="Avatar de l\'utilisateur"]').should('exist');
-  });
+    cy.visit('/edit-profile')
+    cy.get('input[type="file"]')
+      .selectFile('./cypress/dummy.jpg')
+    cy.get('button[name=save]')
+      .click()
+    cy.contains(/profile updated|Profil mis à jour/i).should('exist')
+    cy.get('img[alt*="Avatar de l\'utilisateur"]').should('exist')
+  })
 
   it('should handle long bio text', () => {
-    cy.visit('/edit-profile');
-    const longBio = 'A'.repeat(500);
-    cy.get('textarea[name=bio]').clear().type(longBio);
-    cy.get('button[name=save]').click();
-    cy.contains(/profile updated|Profil mis à jour/i).should('exist');
-  });
+    cy.visit('/edit-profile')
+    const longBio = 'A'.repeat(500)
+    cy.get('textarea[name=bio]')
+      .clear()
+      .type(longBio)
+    cy.get('button[name=save]')
+      .click()
+    cy.contains(/profile updated|Profil mis à jour/i).should('exist')
+  })
 
   // it('should cancel changes', () => {
   //   cy.visit('/edit-profile');
@@ -63,11 +72,13 @@ describe('Edit Profile Page', () => {
   // });
 
   it('should handle special characters in bio', () => {
-    cy.visit('/edit-profile');
-    cy.get('textarea[name=bio]').clear().type('Bio with émojis 🎉 and special chars!');
-    cy.get('button[name=save]').click();
-    cy.contains(/profile updated|Profil mis à jour/i).should('exist');
-  });
+    cy.visit('/edit-profile')
+    cy.get('textarea[name=bio]')
+      .clear()
+      .type('Bio with émojis 🎉 and special chars!')
+    cy.get('button[name=save]').click()
+    cy.contains(/profile updated|Profil mis à jour/i).should('exist')
+  })
 
   // it('should validate email format', () => {
   //   cy.visit('/edit-profile');
@@ -82,4 +93,4 @@ describe('Edit Profile Page', () => {
   //   cy.get('input[type="file"]').selectFile('./cypress/dummy.jpg');
   //   cy.contains(/file too large|fichier trop volumineux/i).should('exist');
   // });
-});
+})
