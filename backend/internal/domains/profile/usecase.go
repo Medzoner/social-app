@@ -34,6 +34,10 @@ func (u UseCase) GetProfile(ctx context.Context, id string) (models.User, error)
 		return profile, fmt.Errorf("failed to get profile for user %s: %w", id, err)
 	}
 
+	if profile.IsZero() {
+		return profile, nil
+	}
+
 	profile, err = u.getAvatar(ctx, profile)
 	if err != nil {
 		log.Printf("Failed to get avatar for user %s: %v", id, err)

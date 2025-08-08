@@ -6,6 +6,8 @@ import (
 
 	"social-app/internal/connector"
 	"social-app/internal/models"
+	"gorm.io/gorm"
+	"errors"
 )
 
 type ProfileRepository interface {
@@ -28,6 +30,9 @@ func (r Repository) GetProfile(ctx context.Context, id string) (models.User, err
 	result := r.conn.DB.
 		First(&user, id)
 	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return models.User{}, nil
+		}
 		return models.User{}, fmt.Errorf("failed to get user with id %s: %w", id, result.Error)
 	}
 	return user, nil

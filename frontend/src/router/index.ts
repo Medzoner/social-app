@@ -12,6 +12,7 @@ import { useAuthStore } from '@/stores/auth'
 import About from '../views/About.vue'
 import OAuthLogin from '../views/OAuthLogin.vue'
 import OAuthCallback from '../views/OAuthCallback.vue'
+import Page404 from '../views/404.vue'
 
 export const routeNames = {
   login: 'login',
@@ -29,6 +30,7 @@ export const routeNames = {
 }
 
 export const routes: Readonly<RouteRecordRaw[]> = [
+  { path: '/404', component: Page404 },
   { path: '/', redirect: `/${routeNames.feed}` },
   { path: `/${routeNames.about}`, component: About },
   { path: `/${routeNames.login}`, component: Login },

@@ -9,9 +9,11 @@
         @click="goToChat(chat.user.id)"
         class="cursor-pointer rounded p-3 transition hover:bg-gray-100"
       >
-        <div class="font-semibold text-gray-800">{{ chat.user.username }}</div>
-        <div class="truncate text-sm text-gray-600">{{ chat.content }}</div>
-        <div class="text-xs text-gray-400">{{ formatDate(chat.created_at) }}</div>
+        <RouterLink :to="`/chat/${chat.user.id}`" class="flex items-center space-x-3">
+          <div class="font-semibold text-gray-800">{{ chat.user.username }}</div>
+          <div class="truncate text-sm text-gray-600">{{ chat.content }}</div>
+          <div class="text-xs text-gray-400">{{ formatDate(chat.created_at) }}</div>
+        </RouterLink>
       </li>
     </ul>
 

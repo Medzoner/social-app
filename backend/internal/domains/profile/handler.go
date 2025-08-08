@@ -41,6 +41,11 @@ func (h Handler) GetProfile(c *middleware.Context) {
 		return
 	}
 
+	if user.IsZero() {
+		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+
 	if user.Avatar == "" {
 		c.JSON(http.StatusOK, user)
 		return

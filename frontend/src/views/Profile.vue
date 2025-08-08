@@ -51,7 +51,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import PostComponent from '../components/post/PostComponent.vue'
 import AvatarImage from '../components/profile/AvatarImage.vue'
 import { useAuthStore } from '@/stores/auth'
@@ -61,6 +61,7 @@ import { Profile, Post, Media, MediaType } from '@/types'
 const auth = useAuthStore()
 const profileStore = useProfileStore()
 const route = useRoute()
+const router = useRouter()
 
 const profile = ref<Profile | null>(null)
 const searchQuery = ref<string>('')
@@ -68,9 +69,15 @@ const notification = ref<string>('')
 const media = ref<Media | null>(null)
 
 const fetchProfile = async (): Promise<void> => {
-  const data = await profileStore.fetchProfile(parseInt(route?.params?.id as string))
-  profile.value = data
-  media.value = data.avatar_media || ''
+  try {
+    const data = await profileStore.fetchProfile(parseInt(route?.params?.id as string))
+    profile.value = data
+    media.value = data.avatar_media || ''
+  } catch (error) {
+    console.error('Erreur lors de la récupération du profil:', error)
+    await router.push('/404')
+    return
+  }
 
   const posts = await axios.get<Post[]>(`/api/profile/${route.params.id}/posts`, {
     headers: { ...auth.getAuthJSONHeader() }
