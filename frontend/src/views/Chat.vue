@@ -95,6 +95,7 @@
         ref="input"
         @input="onInput"
         v-model="content"
+        name="message"
         placeholder="Écrire un message..."
         class="w-full rounded border p-2"
         autocomplete="off"
