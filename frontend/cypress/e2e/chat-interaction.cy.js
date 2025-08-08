@@ -28,7 +28,19 @@ describe('Chat Interaction Between Users', () => {
 
     // Test de l'interaction - Utilisateur 1 envoie un message
     cy.session('user1-send-message', () => {
-      cy.visit('/chat/4') // Chat avec utilisateur 2
+      // Se connecter d'abord
+      cy.visit('/login')
+      cy.get('input[type=email], input[name=email], input[name=username]')
+        .should('not.be.disabled')
+        .type('tester')
+      cy.get('input[type=password], input[name=password]')
+        .should('not.be.disabled')
+        .type('12345')
+      cy.get('form').submit()
+      cy.url().should('include', '/feed')
+      
+      // Aller sur la page de chat
+      cy.visit('/chat/4') // Chat avec utilisateur 4
       
       // Attendre que la page de chat soit chargée
       cy.url().should('include', '/chat/4')
@@ -45,6 +57,18 @@ describe('Chat Interaction Between Users', () => {
 
     // Test de l'interaction - Utilisateur 2 reçoit et répond
     cy.session('user2-receive-reply', () => {
+      // Se connecter d'abord
+      cy.visit('/login')
+      cy.get('input[type=email], input[name=email], input[name=username]')
+        .should('not.be.disabled')
+        .type('medz')
+      cy.get('input[type=password], input[name=password]')
+        .should('not.be.disabled')
+        .type('12345')
+      cy.get('form').submit()
+      cy.url().should('include', '/feed')
+      
+      // Aller sur la page de chat
       cy.visit('/chat/1') // Chat avec utilisateur 1
       
       // Attendre que la page de chat soit chargée
@@ -66,6 +90,18 @@ describe('Chat Interaction Between Users', () => {
 
     // Test de l'interaction - Utilisateur 1 voit la réponse
     cy.session('user1-see-reply', () => {
+      // Se connecter d'abord
+      cy.visit('/login')
+      cy.get('input[type=email], input[name=email], input[name=username]')
+        .should('not.be.disabled')
+        .type('tester')
+      cy.get('input[type=password], input[name=password]')
+        .should('not.be.disabled')
+        .type('12345')
+      cy.get('form').submit()
+      cy.url().should('include', '/feed')
+      
+      // Aller sur la page de chat
       cy.visit('/chat/4')
       
       // Attendre que la page de chat soit chargée
@@ -225,7 +261,7 @@ describe('Chat Interaction Between Users', () => {
   it('should handle multiple chat conversations', () => {
     // Test avec plusieurs conversations simultanées
     const conversations = [
-      { user1: 'tester', user2: 'medz', chatId: 2 },
+      { user1: 'tester', user2: 'medz', chatId: 4 },
       { user1: 'medz', user2: 'tester', chatId: 1 }
     ]
 
