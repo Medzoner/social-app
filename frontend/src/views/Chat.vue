@@ -287,10 +287,11 @@ const groupedMessages = computed(() => {
   }
 
   return Object.entries(groups).map(([dateKey, msgs]) => {
+    const ms = msgs as Message[]
     const group: MessageGoup = {
-      date: formatDateHeader(msgs[0].created_at),
-      messages: msgs as Message[],
-      id: parseInt(dateKey)
+      date: formatDateHeader(ms[0].created_at),
+      messages: ms,
+      id: ms.length > 0 ? new Date((msgs as Message[])[0].created_at).getTime() : 0
     }
 
     return group

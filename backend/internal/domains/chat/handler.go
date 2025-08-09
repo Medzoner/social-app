@@ -1,6 +1,7 @@
 package chat
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -11,7 +12,6 @@ import (
 	notif "social-app/internal/domains/notification"
 	"social-app/internal/models"
 	"social-app/pkg/middleware"
-	"context"
 )
 
 type Handler struct {
@@ -30,6 +30,7 @@ func (h Handler) CreatMessage(c *middleware.Context) {
 	msg := chat.CreateMessageInput{UserID: c.User.ID}
 	if err := c.BindJSON(&msg); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid message binding"})
+		return
 	}
 
 	newMsg, err := h.usecase.CreateMessage(c.Request.Context(), msg)

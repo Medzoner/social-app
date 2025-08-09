@@ -2,10 +2,10 @@ package ws
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 
 	"github.com/gorilla/websocket"
-	"encoding/json"
 )
 
 var broadcast = make(chan string)

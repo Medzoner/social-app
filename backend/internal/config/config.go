@@ -11,14 +11,14 @@ import (
 )
 
 type Config struct {
-	Mailer   Mailgun `envPrefix:"MAILER_"`
-	SMS      SMS     `envPrefix:"SMS_"`
-	DB       DB      `envPrefix:"DB_"`
-	Auth     Auth
+	Mailer   Mailgun  `envPrefix:"MAILER_"`
+	SMS      SMS      `envPrefix:"SMS_"`
+	DB       DB       `envPrefix:"DB_"`
 	LLM      LLM      `envPrefix:"LLM_"`
-	Mailtrap Mailtrap `envPrefix:"MAILER_"`
-	Redis    Redis    `envPrefix:"REDIS_"`
 	Media    Media    `envPrefix:"MEDIA_"`
+	Mailtrap Mailtrap `envPrefix:"MAILER_"`
+	Auth     Auth
+	Redis    Redis `envPrefix:"REDIS_"`
 }
 
 type DB struct {

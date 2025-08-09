@@ -204,7 +204,7 @@ describe('Edit Profile Page', () => {
     cy.visit('/edit-profile')
     
     // Essayer d'uploader un fichier invalide
-    cy.get('input[type="file"]').selectFile('cypress/dummy.flv', { force: true })
+    cy.get('input[type="file"]').selectFile('cypress/dummy.mp4', { force: true })
     
     // Sauvegarder
     cy.get('button[name="save"]').click()

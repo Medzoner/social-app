@@ -2,21 +2,21 @@ package profile
 
 import (
 	"context"
+	"fmt"
+	"log"
+	"net/url"
 
+	"github.com/google/uuid"
+	"social-app/internal/domains/media"
 	"social-app/internal/models"
 	"social-app/pkg/notifier"
-	"social-app/internal/domains/media"
-	"net/url"
-	"log"
-	"github.com/google/uuid"
-	"fmt"
 )
 
 type UseCase struct {
-	repo    Repository
-	mediaUC media.UseCase
 	mailer  notifier.Mailerx
 	sms     notifier.SMSNotifier
+	repo    Repository
+	mediaUC media.UseCase
 }
 
 func NewUseCase(r Repository, muc media.UseCase, s notifier.SMSNotifier, m notifier.Mailerx) UseCase {
@@ -80,7 +80,7 @@ func (u UseCase) getAvatar(ctx context.Context, profile models.User) (models.Use
 		m, err := u.mediaUC.GetMedia(ctx, uuid.MustParse(profile.Avatar))
 		if err != nil {
 			log.Printf("Failed to get media for user %d: %v", profile.ID, err)
-			return profile, err
+			return profile, fmt.Errorf("failed to get media for user %d: %w", profile.ID, err)
 		}
 
 		profile.AvatarMedia = models.AvatarMedia{

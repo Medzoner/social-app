@@ -8,10 +8,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/google/uuid"
-	"social-app/internal/models"
-	"social-app/internal/config"
 	"github.com/akrennmair/slice"
+	"github.com/google/uuid"
+	"social-app/internal/config"
+	"social-app/internal/models"
 )
 
 type MimeInfo struct {

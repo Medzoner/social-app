@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/akrennmair/slice"
 	"github.com/google/uuid"
 	"social-app/api/post"
 	"social-app/internal/domains/media"
 	"social-app/internal/models"
 	"social-app/pkg/ws"
-	"github.com/akrennmair/slice"
 )
 
 type UseCase struct {

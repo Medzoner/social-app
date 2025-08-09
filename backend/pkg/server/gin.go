@@ -28,6 +28,7 @@ type Server struct {
 
 func NewServer(ctx context.Context, router routes.Router, bc ws.Broadcaster, rc *connector.RedisConnector) Server {
 	r := gin.New()
+	r.MaxMultipartMemory = 8 << 20 // 8 MB
 	docs.SwaggerInfo.BasePath = "/"
 	router.SetupRoutes(r)
 	return Server{

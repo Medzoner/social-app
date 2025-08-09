@@ -2,12 +2,12 @@ package auth
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
+	"gorm.io/gorm"
 	"social-app/internal/connector"
 	"social-app/internal/models"
-	"gorm.io/gorm"
-	"errors"
 )
 
 type AuthRepository interface {

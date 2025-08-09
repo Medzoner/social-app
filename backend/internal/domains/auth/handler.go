@@ -1,13 +1,13 @@
 package auth
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"social-app/api/auth"
 	"social-app/api/profile"
 	"social-app/pkg/middleware"
-	"fmt"
 )
 
 type Handler struct {

@@ -69,20 +69,20 @@ router.beforeEach((to, from, next): void => {
 
   if (
     (!auth?.user?.verified && to.meta.requiresAuth && to.path !== `/${routeNames.login}`) ||
-    (!auth.isAuthenticated && to.path !== `${routeNames.verify}`)
+    (!auth.isAuthenticated && to.path !== `/${routeNames.verify}`)
   ) {
     return next(`/${routeNames.login}`)
   }
 
   if (
-    !auth?.user?.verified &&
+    auth?.user?.verified &&
     to.meta.requiresAdmin &&
-    auth.user?.role !== `/${routeNames.admin}`
+    auth.user?.role !== 'admin'
   ) {
     return next(`/${routeNames.feed}`)
   }
 
-  if (auth.user && !auth.user.verified && to.meta.requiresAuth) {
+  if (auth.user && !auth.user.verified && to.meta.requiresAuth && to.path !== `/${routeNames.verify}`) {
     return next(`/${routeNames.verify}`)
   }
 
