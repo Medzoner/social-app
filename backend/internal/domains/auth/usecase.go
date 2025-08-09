@@ -19,6 +19,13 @@ import (
 	"social-app/pkg/ws"
 )
 
+type googleUserInfo struct {
+	ID      string `json:"id"`
+	Email   string `json:"email"`
+	Name    string `json:"name"`
+	Picture string `json:"picture"`
+}
+
 type UseCase struct {
 	mailer            notifier.Mailerx
 	sms               notifier.SMSNotifier
@@ -279,70 +286,26 @@ func (u UseCase) IsUserOnline(ctx context.Context, id uint64) (bool, error) {
 }
 
 func (u UseCase) OauthCallback(ctx context.Context, input auth.OauthInput) (auth.JWTToken, error) {
-	token, err := u.googleOAuthConfig.Exchange(ctx, input.Code)
+	info, err := u.exchangeGoogleUserInfo(ctx, input.Code)
 	if err != nil {
-		return auth.JWTToken{}, fmt.Errorf("failed to exchange OAuth code: %w", err)
+		return auth.JWTToken{}, err
 	}
 
-	client := u.googleOAuthConfig.Client(ctx, token)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://www.googleapis.com/oauth2/v2/userinfo", http.NoBody)
+	user, err := u.getOrCreateUserFromGoogle(ctx, info)
 	if err != nil {
-		return auth.JWTToken{}, fmt.Errorf("creating request: %w", err)
+		return auth.JWTToken{}, err
 	}
 
-	resp, err := client.Do(req)
+	pendingToken, pending, err := u.maybeReturnPendingVerification(ctx, user)
 	if err != nil {
-		return auth.JWTToken{}, fmt.Errorf("making request: %w", err)
+		return auth.JWTToken{}, err
 	}
-	defer resp.Body.Close()
-
-	var userInfo struct {
-		ID      string `json:"id"`
-		Email   string `json:"email"`
-		Name    string `json:"name"`
-		Picture string `json:"picture"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&userInfo); err != nil {
-		return auth.JWTToken{}, fmt.Errorf("failed to decode user info: %w", err)
+	if pending {
+		return pendingToken, nil
 	}
 
-	user, err := u.repo.GetByEmail(ctx, userInfo.Email)
-	if err != nil {
-		return auth.JWTToken{}, fmt.Errorf("failed to login user: %w", err)
-	}
-	if user.IsZero() {
-		user = models.User{
-			Username: userInfo.Name,
-			Email:    userInfo.Email,
-			Avatar:   userInfo.Picture,
-			Role:     "user",
-		}
-
-		user, err = u.repo.Register(ctx, user)
-		if err != nil {
-			return auth.JWTToken{}, fmt.Errorf("failed to register user: %w", err)
-		}
-	}
-
-	if !user.Verified || user.VerifiedExpires.Before(time.Now()) {
-		if err := u.handleVerificationPending(ctx, user); err != nil {
-			return auth.JWTToken{}, fmt.Errorf("failed to handle verification pending: %w", err)
-		}
-		return auth.JWTToken{
-			VerifyResponse: auth.VerifyResponse{
-				ID:       user.ID,
-				Username: user.Username,
-				Verified: false,
-			},
-		}, nil
-	}
-
-	if !user.IsZero() {
-		user.Username = userInfo.Name
-		user.Avatar = userInfo.Picture
-		if err := u.repo.Update(ctx, user); err != nil {
-			return auth.JWTToken{}, fmt.Errorf("failed to update user: %w", err)
-		}
+	if err := u.syncUserFromGoogle(ctx, user, info); err != nil {
+		return auth.JWTToken{}, err
 	}
 
 	tk, err := u.generateJWT(user)
@@ -355,4 +318,74 @@ func (u UseCase) OauthCallback(ctx context.Context, input auth.OauthInput) (auth
 
 func (u UseCase) OauthLogin(ctx context.Context) string {
 	return u.googleOAuthConfig.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
+}
+
+func (u UseCase) exchangeGoogleUserInfo(ctx context.Context, code string) (googleUserInfo, error) {
+	token, err := u.googleOAuthConfig.Exchange(ctx, code)
+	if err != nil {
+		return googleUserInfo{}, fmt.Errorf("failed to exchange OAuth code: %w", err)
+	}
+
+	client := u.googleOAuthConfig.Client(ctx, token)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://www.googleapis.com/oauth2/v2/userinfo", http.NoBody)
+	if err != nil {
+		return googleUserInfo{}, fmt.Errorf("creating request: %w", err)
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return googleUserInfo{}, fmt.Errorf("making request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	var info googleUserInfo
+	if err := json.NewDecoder(resp.Body).Decode(&info); err != nil {
+		return googleUserInfo{}, fmt.Errorf("failed to decode user info: %w", err)
+	}
+	return info, nil
+}
+
+func (u UseCase) getOrCreateUserFromGoogle(ctx context.Context, info googleUserInfo) (models.User, error) {
+	user, err := u.repo.GetByEmail(ctx, info.Email)
+	if err != nil {
+		return models.User{}, fmt.Errorf("failed to login user: %w", err)
+	}
+	if user.IsZero() {
+		user = models.User{
+			Username: info.Name,
+			Email:    info.Email,
+			Avatar:   info.Picture,
+			Role:     "user",
+		}
+		user, err = u.repo.Register(ctx, user)
+		if err != nil {
+			return models.User{}, fmt.Errorf("failed to register user: %w", err)
+		}
+	}
+	return user, nil
+}
+
+func (u UseCase) maybeReturnPendingVerification(ctx context.Context, user models.User) (auth.JWTToken, bool, error) {
+	if !user.Verified || user.VerifiedExpires.Before(time.Now()) {
+		if err := u.handleVerificationPending(ctx, user); err != nil {
+			return auth.JWTToken{}, false, fmt.Errorf("failed to handle verification pending: %w", err)
+		}
+		return auth.JWTToken{
+			VerifyResponse: auth.VerifyResponse{
+				ID:       user.ID,
+				Username: user.Username,
+				Verified: false,
+			},
+		}, true, nil
+	}
+	return auth.JWTToken{}, false, nil
+}
+
+func (u UseCase) syncUserFromGoogle(ctx context.Context, user models.User, info googleUserInfo) error {
+	user.Username = info.Name
+	user.Avatar = info.Picture
+	if err := u.repo.Update(ctx, user); err != nil {
+		return fmt.Errorf("failed to update user: %w", err)
+	}
+	return nil
 }

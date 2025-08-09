@@ -8,8 +8,8 @@
     "serve": "vite preview",
     "lint": "prettier --write .",
     "e2e:init": "npx cypress install",
-    "e2e": "npx cypress open --e2e --browser chrome",
-    "test:e2e": "npx cypress run --e2e"
+    "e2e:open": "npx cypress open --e2e",
+    "e2e:run": "npx cypress run --e2e"
   },
   "dependencies": {
     "axios": "^1.11.0",
