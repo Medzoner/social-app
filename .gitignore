@@ -4,3 +4,5 @@ dist
 backend/uploads/*
 backend/var/*
 .env
+/frontend/cypress/downloads
+/frontend/cypress/screenshots
