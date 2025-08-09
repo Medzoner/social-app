@@ -9,7 +9,9 @@
     "lint": "prettier --write .",
     "e2e:init": "npx cypress install",
     "e2e:open": "npx cypress open --e2e",
-    "e2e:run": "npx cypress run --e2e"
+    "e2e:run": "npx cypress run --e2e",
+    "e2e:serve-run:ci": "npx -y start-server-and-test \"npm run dev -- --port 5173 --strictPort\" http://localhost:5173 \"npm run e2e:run\"",
+    "e2e:serve-run:gui": "npx -y start-server-and-test \"npm run dev -- --port 5173 --strictPort\" http://localhost:5173 \"npm run e2e:open\""
   },
   "dependencies": {
     "axios": "^1.11.0",
